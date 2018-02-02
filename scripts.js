@@ -8,10 +8,11 @@ window.onload = function () {
             renderElements(parsedGet[i]);
 
             recursion(parsedGet[i].answers);
-            
+
         }
+        console.log(parsedGet);
         console.log("this is parsedGet.answers: " + parsedGet[0].answers);
-        console.log("this is parsedGet" + parsedGet[0]);
+
     };
 
     function httpGet(theUrl, callback) {
@@ -22,20 +23,23 @@ window.onload = function () {
 
             if (http.readyState == 4 && http.status == 200) {
                 callback(JSON.parse(http.responseText));
-                console.log("vi kom in i IF tjohooooooo");
-                console.log(http.status);
             }
         };
         http.send(null);
     };
 
     function recursion(n) {
-        if (n <= 1) {
-            return 1;            
-        };
-        renderElements(n);
-        
-        //return n * recursion(n - 1);
+
+        if (n[0].answers == undefined){
+            console.log("and now we are undefined")
+            return;
+        }
+            console.log("n's length is: " + n[0].answers.length)
+
+            renderElements(n);
+            console.log("n just printed")
+           // recursion(n.answers);
+        //}
     }
 
     function renderElements(objectToPrint) {
@@ -55,7 +59,6 @@ window.onload = function () {
         myDiv.appendChild(nameBox);
         myDiv.appendChild(commentBox);
 
-        console.log("this is commenter: " + objectToPrint);
 
         myDiv.insertAdjacentHTML('beforeend', '<br />');
 
