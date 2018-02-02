@@ -2,11 +2,11 @@
 window.onload = function () {
 
     //functions
-    function callBack(httpReq) {
-        console.log(httpReq);        
-        let content = JSON.parse(httpReq);       
-        console.log("this is after parse: ", content);
-
+    function callBack(parsedGet) {
+        renderElements(parsedGet[0]);
+        //recursion(parsedGet.answers);
+        console.log("this is parsedGet.answers: " + parsedGet[0].answers);
+        console.log("this is parsedGet" + parsedGet);
     };
 
     function httpGet(theUrl, callback) {
@@ -16,12 +16,11 @@ window.onload = function () {
         http.onreadystatechange = function () {
 
             if (http.readyState == 4 && http.status == 200) {
-                callback(http.responseText);
+                callback(JSON.parse(http.responseText));
                 console.log("vi kom in i IF tjohooooooo");
                 console.log(http.status);
             }
         };
-
         http.send(null);
     };
 
@@ -29,29 +28,30 @@ window.onload = function () {
         if (n <= 1){
             return 1;
         };
-        return n * factorial(n-1);
+        return n * recursion(n-1);
     }
 
-    function renderElements () {
+    function renderElements (objectToPrint) {
         let myDiv = document.getElementById("comment-box")
-        for (var i = 0; i < content.length; i++) {
-            
+        
+            //recursion(commentArray[i]);
+
             var commentBox = document.createElement("div");
             var nameBox = document.createElement("div");
             myDiv.appendChild(commentBox);               
-                var likes = document.createTextNode(" Likes: " + content[i]["likes"]);
-                var commenter = document.createTextNode(content[i]["commenter"]);
-                var message = document.createTextNode(content[i]["message"]);
+                var likes = document.createTextNode(" Likes: " + objectToPrint["likes"]);
+                var commenter = document.createTextNode(objectToPrint["commenter"]);
+                var message = document.createTextNode(objectToPrint["message"]);
                 nameBox.appendChild(commenter);
                 nameBox.appendChild(likes);
                 commentBox.appendChild(message);
                 myDiv.appendChild(nameBox);
                 myDiv.appendChild(commentBox);
 
-                console.log(commenter);
+                console.log("this is commenter: " + objectToPrint);
            
             myDiv.insertAdjacentHTML('beforeend', '<br />');
-        };
+        
     }
 
     //Exec below
