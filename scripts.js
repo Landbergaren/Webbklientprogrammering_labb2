@@ -4,7 +4,7 @@ window.onload = function () {
     function callBack(parsedGet) {
         console.log("this is parsedGet")
         console.log(parsedGet);
-        recursion(parsedGet, "--");
+        recursion(parsedGet, "");
 
     };
 
@@ -28,15 +28,14 @@ window.onload = function () {
             return;
         }
         if (Array.isArray(n)) {
-            for (var comment of n) {                
+            for (var comment of n) {
                 let commentBox = renderSingleElement("div", level)
                 recursion(comment, level);
             }
         }
         else {
-            console.log("current level is " + level + "------") 
             renderElements(n, level);
-            recursion(n.answers, level + "--------");
+            recursion(n.answers, level + "----------");
         }
     }
 
@@ -55,45 +54,67 @@ window.onload = function () {
     // }
 
 
-// function visitAll(level, node) {
-//     if (Array.isArray(node)) {
-//       for (const child of node)          // A loop
-//         visitAll(level, child);          // where we make recursive calls
-//     } else {
-//       console.log(`${level} ${node.message}`);
-//       for (const child of node.answers)  // A loop
-//         visitAll('-' + level, child);    // where we make recursive calls
-//     }
-//   }
+    // function visitAll(level, node) {
+    //     if (Array.isArray(node)) {
+    //       for (const child of node)          // A loop
+    //         visitAll(level, child);          // where we make recursive calls
+    //     } else {
+    //       console.log(`${level} ${node.message}`);
+    //       for (const child of node.answers)  // A loop
+    //         visitAll('-' + level, child);    // where we make recursive calls
+    //     }
+    //   }
 
-function renderElements(objectToPrint, level) {
-    let myDiv = document.getElementById("comment-box")
+    function renderElements(objectToPrint, level) {
+        let myDiv = document.getElementById("comment-box")
 
-    var commentBox = document.createElement("div");
-    commentBox.classList.add("comment-box");
-    var nameBox = document.createElement("div");
-    myDiv.appendChild(commentBox);
-    var likes = document.createTextNode(" Likes: " + objectToPrint["likes"]);
-    var commenter = document.createTextNode(objectToPrint["commenter"]);
-    var message = document.createTextNode("current level is: " + level + " " + objectToPrint["message"]);
-    nameBox.appendChild(commenter);
+        //Create
+        let commentBox = document.createElement("div");
+        let nameBox = document.createElement("div");
+        let contentBox = document.createElement("p");
+        nameBox.classList.add("comment-box");
+        myDiv.appendChild(commentBox);
+        let likes = document.createTextNode(" Likes: " + objectToPrint["likes"]);
+        let likesElement = document.createElement("div");
+        let commenter = document.createTextNode(objectToPrint["commenter"]);
+        let message = document.createTextNode(objectToPrint["message"]);
+        let likeButton = document.createElement("button");
+        let likeButtonTxt = document.createTextNode("Like");
+        let hideButton = document.createElement("button");
+        let hideButtonTxt = document.createTextNode("Hide");
 
-    commentBox.appendChild(message);
-    
-    commentBox.appendChild(likes);
-    commentBox.appendChild(nameBox);
-    myDiv.appendChild(commentBox);
-    myDiv.insertAdjacentHTML('beforeend', '<br />');
+        //Append
+        likesElement.appendChild(likes)
+        likeButton.appendChild(likeButtonTxt);
+        likeButton.setAttribute("onclick", `hide(${objectToPrint["id"]})`)
+        hideButton.appendChild(hideButtonTxt);
+        nameBox.appendChild(commenter);
+        nameBox.appendChild(likes);
+        nameBox.appendChild(likeButton);
+        nameBox.appendChild(hideButton);
+        commentBox.appendChild(nameBox);
+        contentBox.appendChild(message);
+        commentBox.appendChild(contentBox);
+        commentBox.setAttribute("id", objectToPrint["id"])
+        myDiv.appendChild(commentBox);
+
+        myDiv.insertAdjacentHTML('beforeend', '<br />');
+
+    }
+
+    function renderSingleElement(elementType, message) {
+        let innerDiv = document.getElementById("comment-box")
+        let newElement = document.createElement(elementType)
+        let newTextNode = document.createTextNode(`${message}`);
+        innerDiv.appendChild(newTextNode);
+        return innerDiv;
+    }
+
+    //Exec below
+    httpGet("http://localhost:8080/deep", callBack);
+
+};
+
+function hide(id) {
+    document.getElementById(id).style.display = "none";
 }
-
-function renderSingleElement(elementType, message) {
-    let innerDiv = document.getElementById("comment-box")
-    let newElement = document.createElement(elementType)
-    let newTextNode = document.createTextNode(`"${message}"`);
-    innerDiv.appendChild(newTextNode);
-    return innerDiv;
-}
-//Exec below
-httpGet("http://localhost:8080/shallow", callBack);
-
-}; 
