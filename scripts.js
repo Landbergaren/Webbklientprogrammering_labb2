@@ -120,12 +120,13 @@ window.onload = function () {
 
 function hide(id) {
     let currentAttr = document.getElementById(id).getAttribute("style");
+    let commentElement = document.getElementById(id.toString())
     console.log(currentAttr);
     if (currentAttr !== "display: none;") {
-        document.getElementById(id.toString()).style.display = "none";
+        commentElement.style.display = "none";
     }
     else {
-        document.getElementById(id.toString()).style.display = "inline-block";
+        commentElement.style.display = "inline-block";
     }
 }
 
