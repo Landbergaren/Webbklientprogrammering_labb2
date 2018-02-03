@@ -69,6 +69,7 @@ window.onload = function () {
         let myDiv = document.getElementById("comment-box")
 
         //Create
+        let outerBox = document.createElement("div");
         let commentBox = document.createElement("div");
         let nameBox = document.createElement("div");
         let contentBox = document.createElement("p");
@@ -86,17 +87,19 @@ window.onload = function () {
         //Append
         likesElement.appendChild(likes)
         likeButton.appendChild(likeButtonTxt);
-        likeButton.setAttribute("onclick", `hide(${objectToPrint["id"]})`)
+        outerBox.appendChild(hideButton);
+        hideButton.setAttribute("onclick", `hide("${objectToPrint.id}")`)
         hideButton.appendChild(hideButtonTxt);
         nameBox.appendChild(commenter);
         nameBox.appendChild(likes);
+
         nameBox.appendChild(likeButton);
-        nameBox.appendChild(hideButton);
         commentBox.appendChild(nameBox);
         contentBox.appendChild(message);
         commentBox.appendChild(contentBox);
-        commentBox.setAttribute("id", objectToPrint["id"])
-        myDiv.appendChild(commentBox);
+        commentBox.setAttribute("id", `${objectToPrint.id}`);
+        outerBox.appendChild(commentBox);
+        myDiv.appendChild(outerBox);
 
         myDiv.insertAdjacentHTML('beforeend', '<br />');
 
@@ -116,5 +119,13 @@ window.onload = function () {
 };
 
 function hide(id) {
-    document.getElementById(id).style.display = "none";
+    let currentAttr = document.getElementById(id).getAttribute("style");
+    console.log(currentAttr);
+    if (currentAttr !== "display: none;") {
+        document.getElementById(id.toString()).style.display = "none";
+    }
+    else {
+        document.getElementById(id.toString()).style.display = "inline-block";
+    }
 }
+
