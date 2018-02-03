@@ -4,7 +4,7 @@ window.onload = function () {
     function callBack(parsedGet) {
         console.log("this is parsedGet")
         console.log(parsedGet);
-        recursion(parsedGet, 1);
+        recursion(parsedGet, "--");
 
     };
 
@@ -28,14 +28,15 @@ window.onload = function () {
             return;
         }
         if (Array.isArray(n)) {
-            for (var comment of n) {
+            for (var comment of n) {                
+                let commentBox = renderSingleElement("div", level)
                 recursion(comment, level);
             }
         }
         else {
-            console.log("current level is " + level)
+            console.log("current level is " + level + "------") 
             renderElements(n, level);
-            recursion(n.answers, ++level);
+            recursion(n.answers, level + "--------");
         }
     }
 
@@ -68,7 +69,6 @@ window.onload = function () {
 function renderElements(objectToPrint, level) {
     let myDiv = document.getElementById("comment-box")
 
-
     var commentBox = document.createElement("div");
     commentBox.classList.add("comment-box");
     var nameBox = document.createElement("div");
@@ -77,11 +77,21 @@ function renderElements(objectToPrint, level) {
     var commenter = document.createTextNode(objectToPrint["commenter"]);
     var message = document.createTextNode("current level is: " + level + " " + objectToPrint["message"]);
     nameBox.appendChild(commenter);
-    nameBox.appendChild(likes);
+
     commentBox.appendChild(message);
+    
+    commentBox.appendChild(likes);
     commentBox.appendChild(nameBox);
     myDiv.appendChild(commentBox);
     myDiv.insertAdjacentHTML('beforeend', '<br />');
+}
+
+function renderSingleElement(elementType, message) {
+    let innerDiv = document.getElementById("comment-box")
+    let newElement = document.createElement(elementType)
+    let newTextNode = document.createTextNode(`"${message}"`);
+    innerDiv.appendChild(newTextNode);
+    return innerDiv;
 }
 //Exec below
 httpGet("http://localhost:8080/shallow", callBack);
