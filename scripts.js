@@ -1,21 +1,12 @@
 //onload
 window.onload = function () {
-    var counter = 0;
+
     //functions
     function callBack(parsedGet) {
-
+        console.log(parsedGet);
         recursion(parsedGet);
 
-        /*
-        for (let i = 0; i < parsedGet.length; i++) {
-            renderElements(parsedGet[i]);
-
-            
-
-        }
-        console.log(parsedGet);
-        console.log("this is parsedGet.answers: " + parsedGet[0].answers);*/
-    }; 
+    };
 
     function httpGet(theUrl, callback) {
         const http = new XMLHttpRequest();
@@ -42,7 +33,6 @@ window.onload = function () {
         }
         else {
             renderElements(n);
-
             recursion(n.answers);
         }
     }
@@ -64,8 +54,10 @@ window.onload = function () {
 
     function renderElements(objectToPrint) {
         let myDiv = document.getElementById("comment-box")
+       
 
         var commentBox = document.createElement("div");
+        commentBox.classList.add("comment-box");
         var nameBox = document.createElement("div");
         myDiv.appendChild(commentBox);
         var likes = document.createTextNode(" Likes: " + objectToPrint["likes"]);
@@ -74,9 +66,8 @@ window.onload = function () {
         nameBox.appendChild(commenter);
         nameBox.appendChild(likes);
         commentBox.appendChild(message);
-        myDiv.appendChild(nameBox);
+        commentBox.appendChild(nameBox);
         myDiv.appendChild(commentBox);
-
         myDiv.insertAdjacentHTML('beforeend', '<br />');
     }
     //Exec below
