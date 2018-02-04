@@ -91,7 +91,7 @@ function renderAllComments(objectToPrint, level) {
     nameBox.classList.add("comment-box");
     myDiv.appendChild(commentBox);
     let likesTxt = document.createTextNode("Likes: " + objectToPrint["likes"]);
-    let likesElement = document.createElement("div");
+    let likesElement = document.createElement("section");
     let commenter = document.createTextNode(objectToPrint["commenter"]);
     let message = document.createTextNode(objectToPrint["message"]);
     let likeButton = document.createElement("button");
@@ -109,6 +109,7 @@ function renderAllComments(objectToPrint, level) {
     likeButton.appendChild(likeButtonTxt);
     outerBox.appendChild(hideButton);
     hideButton.setAttribute("onclick", `hide("${objectToPrint.id}")`)
+    hideButton.classList.add("hide-comment");
     hideButton.appendChild(hideButtonTxt);
     likeButton.setAttribute("onclick", `likeComment("${objectToPrint.id}")`)
     nameBox.appendChild(commenter);
