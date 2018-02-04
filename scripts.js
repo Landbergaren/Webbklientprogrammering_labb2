@@ -1,12 +1,12 @@
 
+
+
 function hide(id) {
     let currentAttr = document.getElementById(id).getAttribute("style");
     let commentElement = document.getElementById(id.toString())
 
     if (currentAttr !== "display: none;") {
         commentElement.style.display = "none";
-        this.value = "det funka";
-        //document.querySelector(`"#${id} button"`).setAttribute("")
     }
     else {
         commentElement.style.display = "inline-block";
@@ -15,6 +15,19 @@ function hide(id) {
 
 function likeComment(id) {
     httpPost("http://localhost:8080/like/" + id, null, callBack);
+}
+
+function answerComment(id) {
+    let inputElement = document.createElement("input");
+    let commentElement = document.getElementById(id);
+    let sendButton = document.createElement("button");
+    let sendButtonTxt = document.createTextNode("Send");    
+    let inputId = id + "a";
+    inputElement.setAttribute("id", inputId);
+    sendButton.setAttribute("onclick", `sendAnswer("${id}", "${inputId}")`);
+    sendButton.appendChild(sendButtonTxt);
+    commentElement.appendChild(inputElement);
+    commentElement.appendChild(sendButton);
 }
 
 function httpPost(theUrl, params, callback) {
@@ -65,7 +78,7 @@ function renderAllComments(objectToPrint, level) {
     let contentBox = document.createElement("p");
     nameBox.classList.add("comment-box");
     myDiv.appendChild(commentBox);
-    let likes = document.createTextNode(objectToPrint["likes"]);
+    let likesTxt = document.createTextNode(objectToPrint["likes"]);
     let likesElement = document.createElement("div");
     let commenter = document.createTextNode(objectToPrint["commenter"]);
     let message = document.createTextNode(objectToPrint["message"]);
@@ -73,9 +86,13 @@ function renderAllComments(objectToPrint, level) {
     let likeButtonTxt = document.createTextNode("Like");
     let hideButton = document.createElement("button");
     let hideButtonTxt = document.createTextNode("Hide/show");
+    let answerButton = document.createElement("button");
+    let answerButtonTxt = document.createTextNode("Answer");
 
-    //Append
-    likesElement.appendChild(likes)
+    //Append    
+    likesElement.appendChild(likesTxt);
+    answerButton.appendChild(answerButtonTxt);
+    answerButton.setAttribute("onclick", `answerComment("${objectToPrint.id}")`)
     likeButton.appendChild(likeButtonTxt);
     outerBox.appendChild(hideButton);
     hideButton.setAttribute("onclick", `hide("${objectToPrint.id}")`)
@@ -85,6 +102,7 @@ function renderAllComments(objectToPrint, level) {
     nameBox.appendChild(likesElement);
 
     likesElement.appendChild(likeButton);
+    likesElement.appendChild(answerButton);
     commentBox.appendChild(nameBox);
     contentBox.appendChild(message);
     commentBox.appendChild(contentBox);
@@ -106,7 +124,6 @@ function renderSingleElement(elementType, message) {
 
 
 //onload
-window.onload = function () {
     //functions
 
 
@@ -123,8 +140,14 @@ window.onload = function () {
         http.send(null);
     };
 
+    function sendAnswer (id, inputId) {    
+        let inputElement = document.getElementById(`${inputId}`);
+        inputValue = inputElement.value;
+        httpPost("http://localhost:8080/answer/" + id, "message=" + inputValue, callBack);
+    }
 
 
+    httpGet("http://localhost:8080/deep", callBack);
     //min tidigare recursion
 
 
@@ -157,8 +180,3 @@ window.onload = function () {
     
 
     //Exec below
-    httpGet("http://localhost:8080/deep", callBack);
-
-};
-
-
