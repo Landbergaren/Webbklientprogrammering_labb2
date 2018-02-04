@@ -21,6 +21,13 @@ window.onload = function () {
         http.send(null);
     };
 
+    function httpPost(theUrl, params, callback) {
+        const http = new XMLHttpRequest();
+        http.open('POST', theUrl, true);
+
+        http.setRequestHeader()
+    }
+
     //min tidigare recursion
     function recursion(n, level) {
         if (n === undefined) {
@@ -82,13 +89,13 @@ window.onload = function () {
         let likeButton = document.createElement("button");
         let likeButtonTxt = document.createTextNode("Like");
         let hideButton = document.createElement("button");
-        let hideButtonTxt = document.createTextNode("Hide");
+        let hideButtonTxt = document.createTextNode("Hide/show");
 
         //Append
         likesElement.appendChild(likes)
         likeButton.appendChild(likeButtonTxt);
         outerBox.appendChild(hideButton);
-        hideButton.setAttribute("onclick", `hide("${objectToPrint.id}")`)
+        hideButton.setAttribute("onclick", `hide("${objectToPrint.id}")`)        
         hideButton.appendChild(hideButtonTxt);
         nameBox.appendChild(commenter);
         nameBox.appendChild(likesElement);
@@ -124,7 +131,8 @@ function hide(id) {
     console.log(currentAttr);
     if (currentAttr !== "display: none;") {
         commentElement.style.display = "none";
-        document.querySelector(`"#${id} button"`).setAttribute("")
+        this.value="det funka";
+        //document.querySelector(`"#${id} button"`).setAttribute("")
     }
     else {
         commentElement.style.display = "inline-block";
