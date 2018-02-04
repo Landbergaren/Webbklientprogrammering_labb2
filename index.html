@@ -7,8 +7,12 @@
     <title>Labb2</title>
 </head>
 <style>
+    * {
+        font-weight: bolder;
+    }
+
     div {
-        padding: 10px;
+        padding: 20px;
         margin: 2px;
         
         border: 2px solid blue;
@@ -20,13 +24,16 @@
         padding: 10px;
     }
 
-    button {
-         float: right; 
-    }
+    
 
     .comment-box {  
         display: block; 
         min-width: 400px;       
+    }
+
+ 
+    textarea {
+        display: block;
     }
 
 
@@ -34,8 +41,10 @@
 <body>
 
     <div id="comment-box">
-        <button id="commentButton">Comment</button>
-        <button id="sortButton">Sort</button>
+        <button id="commentButton" onclick="comment()">Comment</button>
+        Sort by: <select id="sortDropdown" onclick="sort()"><option>Newest</option><option>Oldest</option><option>Most likes</option><option>least likes</option></select>
+        <br /><br />
+        <textarea id="commentInput" ></textarea>
     </div>
 </body>
 

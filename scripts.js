@@ -1,6 +1,7 @@
+//Variables
+let canAnswer = true;
 
-
-
+//Functions
 function hide(id) {
     let currentAttr = document.getElementById(id).getAttribute("style");
     let commentElement = document.getElementById(id.toString())
@@ -17,27 +18,38 @@ function likeComment(id) {
     httpPost("http://localhost:8080/like/" + id, null, callBack);
 }
 
-function answerComment(id) {
-    let inputElement = document.createElement("input");
+function answerComment(id) {    
     let commentElement = document.getElementById(id);
-    let sendButton = document.createElement("button");
-    let sendButtonTxt = document.createTextNode("Send");    
-    let inputId = id + "a";
-    inputElement.setAttribute("id", inputId);
-    sendButton.setAttribute("onclick", `sendAnswer("${id}", "${inputId}")`);
-    sendButton.appendChild(sendButtonTxt);
-    commentElement.appendChild(inputElement);
-    commentElement.appendChild(sendButton);
+    let htmlString = commentElement.innerHTML;
+    if (!(htmlString.indexOf("input") >= 0)) {
+        let inputElement = document.createElement("input");
+        let sendButton = document.createElement("button");
+        let sendButtonTxt = document.createTextNode("Send");
+        let inputId = id + "a";
+        inputElement.setAttribute("id", inputId);
+        sendButton.setAttribute("onclick", `sendAnswer("${id}", "${inputId}")`);
+        sendButton.appendChild(sendButtonTxt);
+        commentElement.appendChild(inputElement);
+        commentElement.appendChild(sendButton);
+        canAnswer = false;
+    }
+}
+
+function comment() {
+    comment = document.querySelector("#commentInput")
+    commentValue = comment.value;
+    httpPost("http://localhost:8080/comment", "message=" + commentValue, callBack);
+    comment.value = "";
 }
 
 function httpPost(theUrl, params, callback) {
     const http = new XMLHttpRequest();
     http.open('POST', theUrl, true);
-    document.body.innerHTML = '<button>Comment</button><div id="comment-box"></div>';
+    document.body.innerHTML = '<div id="comment-box"><button id="commentButton" onclick="comment()">Comment</button><button id="sortButton">Sort</button><br /><br /><textarea id="commentInput" ></textarea></div>';
     http.setRequestHeader("content-type", "application/x-www-form-urlencoded");
 
     http.onreadystatechange = function () {
-        if (http.readyState == 4 && http.status == 200)            
+        if (http.readyState == 4 && http.status == 200)
             callback(JSON.parse(http.responseText));
     };
 
@@ -78,7 +90,7 @@ function renderAllComments(objectToPrint, level) {
     let contentBox = document.createElement("p");
     nameBox.classList.add("comment-box");
     myDiv.appendChild(commentBox);
-    let likesTxt = document.createTextNode(objectToPrint["likes"]);
+    let likesTxt = document.createTextNode("Likes: " + objectToPrint["likes"]);
     let likesElement = document.createElement("div");
     let commenter = document.createTextNode(objectToPrint["commenter"]);
     let message = document.createTextNode(objectToPrint["message"]);
@@ -88,6 +100,7 @@ function renderAllComments(objectToPrint, level) {
     let hideButtonTxt = document.createTextNode("Hide/show");
     let answerButton = document.createElement("button");
     let answerButtonTxt = document.createTextNode("Answer");
+    let timeTxt = document.createTextNode(objectToPrint["creation"]);
 
     //Append    
     likesElement.appendChild(likesTxt);
@@ -100,6 +113,7 @@ function renderAllComments(objectToPrint, level) {
     likeButton.setAttribute("onclick", `likeComment("${objectToPrint.id}")`)
     nameBox.appendChild(commenter);
     nameBox.appendChild(likesElement);
+    nameBox.appendChild(timeTxt);
 
     likesElement.appendChild(likeButton);
     likesElement.appendChild(answerButton);
@@ -110,7 +124,7 @@ function renderAllComments(objectToPrint, level) {
     outerBox.appendChild(commentBox);
     myDiv.appendChild(outerBox);
 
-    myDiv.insertAdjacentHTML('beforeend', '<br />');    
+    myDiv.insertAdjacentHTML('beforeend', '<br />');
 }
 
 function renderSingleElement(elementType, message) {
@@ -121,27 +135,31 @@ function renderSingleElement(elementType, message) {
     return innerDiv;
 }
 
-    function httpGet(theUrl, callback) {
-        const http = new XMLHttpRequest();
-        http.open('GET', theUrl, true);
+function httpGet(theUrl, callback) {
+    const http = new XMLHttpRequest();
+    http.open('GET', theUrl, true);
 
-        http.onreadystatechange = function () {
+    http.onreadystatechange = function () {
 
-            if (http.readyState == 4 && http.status == 200) {
-                callback(JSON.parse(http.responseText));
-            }
-        };
-        http.send(null);
+        if (http.readyState == 4 && http.status == 200) {
+            callback(JSON.parse(http.responseText));
+        }
     };
+    http.send(null);
+};
 
-    function sendAnswer (id, inputId) {    
-        let inputElement = document.getElementById(`${inputId}`);
-        inputValue = inputElement.value;
-        httpPost("http://localhost:8080/answer/" + id, "message=" + inputValue, callBack);
-    }
+function sendAnswer(id, inputId) {
+    let inputElement = document.getElementById(`${inputId}`);
+    inputValue = inputElement.value;
+    httpPost("http://localhost:8080/answer/" + id, "message=" + inputValue, callBack);
+    canAnswer = true;
+}
 
+function sort() {
 
-    httpGet("http://localhost:8080/deep", callBack);
+}
+
+httpGet("http://localhost:8080/deep", callBack);
     //min tidigare recursion
 
 
@@ -171,6 +189,6 @@ function renderSingleElement(elementType, message) {
     //     }
     //   }
 
-    
+
 
     //Exec below
