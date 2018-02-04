@@ -33,7 +33,7 @@ function answerComment(id) {
 function httpPost(theUrl, params, callback) {
     const http = new XMLHttpRequest();
     http.open('POST', theUrl, true);
-    document.body.innerHTML = '<div id="comment-box"></div>';
+    document.body.innerHTML = '<button>Comment</button><div id="comment-box"></div>';
     http.setRequestHeader("content-type", "application/x-www-form-urlencoded");
 
     http.onreadystatechange = function () {
@@ -110,8 +110,7 @@ function renderAllComments(objectToPrint, level) {
     outerBox.appendChild(commentBox);
     myDiv.appendChild(outerBox);
 
-    myDiv.insertAdjacentHTML('beforeend', '<br />');
-
+    myDiv.insertAdjacentHTML('beforeend', '<br />');    
 }
 
 function renderSingleElement(elementType, message) {
@@ -121,11 +120,6 @@ function renderSingleElement(elementType, message) {
     innerDiv.appendChild(newTextNode);
     return innerDiv;
 }
-
-
-//onload
-    //functions
-
 
     function httpGet(theUrl, callback) {
         const http = new XMLHttpRequest();
