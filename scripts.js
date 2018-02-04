@@ -45,7 +45,10 @@ function comment() {
 function httpPost(theUrl, params, callback) {
     const http = new XMLHttpRequest();
     http.open('POST', theUrl, true);
-    document.body.innerHTML = '<div id="comment-box"><button id="commentButton" onclick="comment()">Comment</button><button id="sortButton">Sort</button><br /><br /><textarea id="commentInput" ></textarea></div>';
+    document.body.innerHTML = '    <div id="comment-box"> ' +
+    '<button id="commentButton" onclick="comment()">Comment</button>' +
+    'Sort by: <select id="sortDropdown" onclick="sort()"><option>Newest</option><option>Oldest</option><option>Most likes</option><option>least likes</option></select>' +
+    '<br /><br /><textarea id="commentInput" ></textarea></div>';
     http.setRequestHeader("content-type", "application/x-www-form-urlencoded");
 
     http.onreadystatechange = function () {
