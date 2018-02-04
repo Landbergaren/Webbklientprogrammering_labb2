@@ -34,7 +34,7 @@ window.onload = function () {
             }
         }
         else {
-            renderElements(n, level);
+            renderAllComments(n, level);
             recursion(n.answers, level + "----------");
         }
     }
@@ -65,7 +65,7 @@ window.onload = function () {
     //     }
     //   }
 
-    function renderElements(objectToPrint, level) {
+    function renderAllComments(objectToPrint, level) {
         let myDiv = document.getElementById("comment-box")
 
         //Create
@@ -75,7 +75,7 @@ window.onload = function () {
         let contentBox = document.createElement("p");
         nameBox.classList.add("comment-box");
         myDiv.appendChild(commentBox);
-        let likes = document.createTextNode(" Likes: " + objectToPrint["likes"]);
+        let likes = document.createTextNode(objectToPrint["likes"]);
         let likesElement = document.createElement("div");
         let commenter = document.createTextNode(objectToPrint["commenter"]);
         let message = document.createTextNode(objectToPrint["message"]);
@@ -91,9 +91,9 @@ window.onload = function () {
         hideButton.setAttribute("onclick", `hide("${objectToPrint.id}")`)
         hideButton.appendChild(hideButtonTxt);
         nameBox.appendChild(commenter);
-        nameBox.appendChild(likes);
+        nameBox.appendChild(likesElement);
 
-        nameBox.appendChild(likeButton);
+        likesElement.appendChild(likeButton);
         commentBox.appendChild(nameBox);
         contentBox.appendChild(message);
         commentBox.appendChild(contentBox);
@@ -124,6 +124,7 @@ function hide(id) {
     console.log(currentAttr);
     if (currentAttr !== "display: none;") {
         commentElement.style.display = "none";
+        document.querySelector(`"#${id} button"`).setAttribute("")
     }
     else {
         commentElement.style.display = "inline-block";
