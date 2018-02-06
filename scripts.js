@@ -1,5 +1,6 @@
 //Variables
 let canAnswer = true;
+document.getElementById("sortDropdown").addEventListener("change", function () { httpGet("http://localhost:8080/deep", callBack) });
 
 //Functions
 function hide(id) {
@@ -14,11 +15,7 @@ function hide(id) {
     }
 }
 
-function likeComment(id) {
-    httpPost("http://localhost:8080/like/" + id, null, callBack);
-}
-
-function answerComment(id) {    
+function answerComment(id) {
     let commentElement = document.getElementById(id);
     let htmlString = commentElement.innerHTML;
     if (!(htmlString.indexOf("input") >= 0)) {
@@ -35,19 +32,64 @@ function answerComment(id) {
     }
 }
 
+function editComment(id) {
+    let editElement = document.getElementById(id);
+    let htmlString = editElement.innerHTML;
+    if (!(htmlString.indexOf("input") >= 0)) {
+        let editButton = createMyElement("button", "Edit");
+        let inputElement = document.createElement("input");
+        let inputId = id + "b";
+        inputElement.setAttribute("id", inputId);
+        editButton.setAttribute("onclick", `sendEdit("${id}", "${inputId}")`);
+        editElement.appendChild(inputElement);
+        editElement.appendChild(editButton);
+    }
+}
+
+function sendEdit(id, inputId) {
+    let inputElement = document.getElementById(`${inputId}`);
+    inputValue = inputElement.value;
+    httpPost("http://localhost:8080/edit/" + id, "message=" + inputValue + "&deep=true", callBack);
+}
+
+function sendAnswer(id, inputId) {
+    let inputElement = document.getElementById(`${inputId}`);
+    inputValue = inputElement.value;
+    httpPost("http://localhost:8080/answer/" + id, "message=" + inputValue + "&deep=true", callBack);
+    canAnswer = true;
+}
+
 function comment() {
-    comment = document.querySelector("#commentInput")
-    commentValue = comment.value;
-    httpPost("http://localhost:8080/comment", "message=" + commentValue, callBack);
+    let comment = document.querySelector("#commentInput")
+    let commentValue = comment.value;
+    httpPost("http://localhost:8080/comment", "message=" + commentValue + "&deep=true", callBack);
     comment.value = "";
 }
+
+function likeComment(id) {
+    httpPost("http://localhost:8080/like/" + id,  "&deep=true", callBack);
+}
+
+function httpGet(theUrl, callback) {
+    const http = new XMLHttpRequest();
+    http.open('GET', theUrl, true);
+    commentBox = document.getElementById("comment-box");
+    commentBox.innerHTML = '';
+    
+    http.onreadystatechange = function () {
+
+        if (http.readyState == 4 && http.status == 200) {
+            callback(JSON.parse(http.responseText));
+        }
+    };
+    http.send(null);
+};
 
 function httpPost(theUrl, params, callback) {
     const http = new XMLHttpRequest();
     http.open('POST', theUrl, true);
-    document.body.innerHTML = '    <div id="comment-box"> <button id="commentButton" onclick="comment()">Comment</button>' +
-    'Sort by: <select id="sortDropdown" onclick="sort()"><option>Newest</option><option>Oldest</option><option>Most likes</option><option>least likes</option></select>' +
-    '<br /><br /><textarea id="commentInput" ></textarea></div>';
+    commentBox = document.getElementById("comment-box");
+    commentBox.innerHTML = '';
     http.setRequestHeader("content-type", "application/x-www-form-urlencoded");
 
     http.onreadystatechange = function () {
@@ -59,19 +101,17 @@ function httpPost(theUrl, params, callback) {
 }
 
 function callBack(parsedGet) {
-    console.log("this is parsedGet")
-    console.log(parsedGet);
     recursion(parsedGet, "");
 };
 
 function recursion(n, level) {
     if (n === undefined) {
-        console.log("and now we are undefined")
         return;
     }
     if (Array.isArray(n)) {
+        sortList(n);
         for (var comment of n) {
-            let commentBox = renderSingleElement("div", level)
+            let commentBox = renderSingleElement("div", level);
             recursion(comment, level);
         }
     }
@@ -79,6 +119,58 @@ function recursion(n, level) {
         renderAllComments(n, level);
         recursion(n.answers, level + "----------");
     }
+}
+
+function sortList(lst) {
+    let choice = document.getElementById("sortDropdown").value;
+
+    if (choice === "Most likes") {
+        lst.sort(function (a, b) {
+            let x = a.likes;
+            let y = b.likes;
+
+            return ((x > y)
+                ? -1
+                : ((x < y)
+                    ? 1
+                    : 0));
+        });
+
+    }
+    if (choice === "least likes") {
+        lst.sort(function (a, b) {
+            let x = a.likes;
+            let y = b.likes;
+            return ((x < y)
+                ? -1
+                : ((x > y)
+                    ? 1
+                    : 0));
+        });
+    }
+    if (choice === "Oldest") {
+        lst.sort(function (a, b) {
+            
+            let x = Date.parse(a.creation)
+            let y = Date.parse(b.creation)
+            return ((x < y)
+                ? -1
+                : ((x > y)
+                    ? 1
+                    : 0));
+        });
+    }
+    if (choice === "Newest") {
+        lst.sort(function (a, b) {
+            let x = Date.parse(a.creation);
+            let y = Date.parse(b.creation);
+            return ((x > y)
+                ? -1
+                : ((x < y)
+                    ? 1
+                    : 0));
+        });
+    }    
 }
 
 function renderAllComments(objectToPrint, level) {
@@ -92,27 +184,21 @@ function renderAllComments(objectToPrint, level) {
     let contentBox = document.createElement("p");
     nameBox.classList.add("comment-box");
     myDiv.appendChild(commentBox);
-    let likesTxt = document.createTextNode("Likes: " + objectToPrint["likes"]);
-    let likesElement = document.createElement("section");
+    let likesElement = createMyElement("section", "Likes: " + objectToPrint["likes"])
     let commenter = document.createTextNode(objectToPrint["commenter"]);
     let message = document.createTextNode(objectToPrint["message"]);
-    let likeButton = document.createElement("button");
-    let likeButtonTxt = document.createTextNode("Like");
-    let hideButton = document.createElement("button");
-    let hideButtonTxt = document.createTextNode("Hide/show");
-    let answerButton = document.createElement("button");
-    let answerButtonTxt = document.createTextNode("Answer");
+    let likeButton = createMyElement("button", "Like");
+    let hideButton = createMyElement("button", "Hide/Show");
+    let answerButton = createMyElement("button", "Answer");
+    let editButton = createMyElement("button", "edit");
     let timeTxt = document.createTextNode(objectToPrint["creation"]);
 
     //Append    
-    likesElement.appendChild(likesTxt);
-    answerButton.appendChild(answerButtonTxt);
-    answerButton.setAttribute("onclick", `answerComment("${objectToPrint.id}")`)
-    likeButton.appendChild(likeButtonTxt);
+    answerButton.setAttribute("onclick", `answerComment("${objectToPrint.id}")`);
+    editButton.setAttribute("onclick", `editComment("${objectToPrint.id}")`)
     outerBox.appendChild(hideButton);
     hideButton.setAttribute("onclick", `hide("${objectToPrint.id}")`)
     hideButton.classList.add("hide-comment");
-    hideButton.appendChild(hideButtonTxt);
     likeButton.setAttribute("onclick", `likeComment("${objectToPrint.id}")`)
     nameBox.appendChild(commenter);
     nameBox.appendChild(likesElement);
@@ -120,6 +206,8 @@ function renderAllComments(objectToPrint, level) {
 
     likesElement.appendChild(likeButton);
     likesElement.appendChild(answerButton);
+    likesElement.appendChild(editButton);
+
     commentBox.appendChild(nameBox);
     contentBox.appendChild(message);
     commentBox.appendChild(contentBox);
@@ -138,60 +226,13 @@ function renderSingleElement(elementType, message) {
     return innerDiv;
 }
 
-function httpGet(theUrl, callback) {
-    const http = new XMLHttpRequest();
-    http.open('GET', theUrl, true);
-
-    http.onreadystatechange = function () {
-
-        if (http.readyState == 4 && http.status == 200) {
-            callback(JSON.parse(http.responseText));
-        }
-    };
-    http.send(null);
-};
-
-function sendAnswer(id, inputId) {
-    let inputElement = document.getElementById(`${inputId}`);
-    inputValue = inputElement.value;
-    httpPost("http://localhost:8080/answer/" + id, "message=" + inputValue, callBack);
-    canAnswer = true;
+function createMyElement(element, message) {
+    let newElement = document.createElement(element);
+    let newText = document.createTextNode(message);
+    newElement.appendChild(newText);
+    return newElement;
 }
 
-function sort() {
 
-}
 
 httpGet("http://localhost:8080/deep", callBack);
-    //min tidigare recursion
-
-
-    // function recursion(level, node) {
-    //     if (Array.isArray(node)) {
-    //         for (const child of node) {
-    //             recursion(level, child);
-    //         }
-    //     }
-    //     else {
-    //         console.log(level, node.message);
-    //         for (const child of node.naswers) {
-    //             recursion('-' + level, child);
-    //         }            
-    //     }
-    // }
-
-
-    // function visitAll(level, node) {
-    //     if (Array.isArray(node)) {
-    //       for (const child of node)          // A loop
-    //         visitAll(level, child);          // where we make recursive calls
-    //     } else {
-    //       console.log(`${level} ${node.message}`);
-    //       for (const child of node.answers)  // A loop
-    //         visitAll('-' + level, child);    // where we make recursive calls
-    //     }
-    //   }
-
-
-
-    //Exec below
