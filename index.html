@@ -38,13 +38,12 @@
 
 </style>
 <body>
-
-    <div id="comment-box">
-        <button id="commentButton" onclick="comment()">Comment</button>
-        Sort by: <select id="sortDropdown" onclick="sort()"><option>Newest</option><option>Oldest</option><option>Most likes</option><option>least likes</option></select>
-        <br /><br />
-        <textarea id="commentInput" ></textarea>
-    </div>
+    Sort by: 
+    <select id="sortDropdown" ><option>Newest</option><option>Oldest</option><option>Most likes</option><option>least likes</option></select>
+    <textarea id="commentInput" ></textarea>
+    <button id="commentButton" onclick="comment()">Comment</button>
+    <br />
+    <div id="comment-box"></div>
 </body>
 
 <script src="scripts.js"></script>

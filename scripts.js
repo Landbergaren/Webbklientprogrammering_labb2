@@ -1,5 +1,5 @@
 //Variables
-let canAnswer = true;
+//let canAnswer = true;
 document.getElementById("sortDropdown").addEventListener("change", function () { httpGet("http://localhost:8080/deep", callBack) });
 
 //Functions
